@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package orgsvc;
+
+option go_package = "internal/common/genproto/organization";
+
+import "api/protobuf/organization.proto";
+
+message ByIDRequest { uint64 ID = 1; }
+
+service OrganizationService {
+  rpc GetBranch(ByIDRequest) returns (organization.Branch);
+}

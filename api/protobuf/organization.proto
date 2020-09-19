@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package organization;
+
+option go_package = "internal/common/genproto/organization";
+
+message Branch {
+  string Name = 1;
+  string PhoneNumber = 2;
+}
+
+message Organization {
+  string Name = 1;
+  repeated Branch Branches = 2;
+}
