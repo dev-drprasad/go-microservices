@@ -1,0 +1,22 @@
+.ant-layout {
+  .ant-layout-sider {
+    background: linear-gradient(135deg, rgb(15, 112, 255) 0%, rgb(33, 213, 210) 100%);
+    .logo {
+      height: 32px;
+      background: rgba(255, 255, 255, 0.2);
+      margin: 16px;
+    }
+    .ant-menu {
+      background: transparent;
+      .ant-menu {
+        background: transparent;
+      }
+    }
+  }
+
+  .site-layout {
+    .site-layout-background {
+      background: #fff;
+    }
+  }
+}

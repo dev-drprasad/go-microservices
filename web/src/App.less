@@ -1,0 +1,40 @@
+@import "~antd/dist/antd.less";
+#router {
+  height: 100%;
+}
+
+a,
+.ant-btn.ant-btn-link,
+.ant-btn-background-ghost.ant-btn-primary {
+  color: darken(#00cc83, 5%);
+  font-weight: 600;
+}
+
+.ant-card.ant-card-small {
+  > .ant-card-head {
+    padding: 0; // @card-head-padding is for title
+    min-height: 32px;
+  }
+
+  .ant-card-body {
+    padding: 16px;
+    > .ant-list.ant-list-sm.ant-list-bordered {
+      margin-top: -12px;
+      border: 1px solid transparent;
+      .ant-list-item {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+  }
+}
+
+.ant-form-item-explain {
+  font-size: 12px !important;
+}
+
+.row-clickable {
+  .ant-table tbody tr {
+    cursor: pointer;
+  }
+}

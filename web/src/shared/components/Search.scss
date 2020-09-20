@@ -1,0 +1,58 @@
+// .search-container {
+//   color: rgba(66, 82, 110, 0.75);
+//   background-color: rgb(225, 227, 233);
+//   .ant-input-group-wrapper {
+//     .ant-input {
+//       background-color: inherit;
+//       &:not(:focus):not(:hover) {
+//         border-color: transparent;
+//       }
+//     }
+//     .ant-input-group-addon {
+//       padding: 0;
+//       border: 0;
+//       background-color: inherit;
+//       > * {
+//         border: 0;
+//       }
+//       .ant-btn {
+//         color: rgba(66, 82, 110, 0.85);
+//         background-color: rgb(225, 227, 233);
+//       }
+//     }
+//   }
+// }
+
+.search-container {
+  color: rgba(66, 82, 110, 1);
+  background-color: rgb(225, 227, 233);
+  .ant-input-search {
+    .ant-input-suffix {
+      .anticon::before {
+        border-left-width: 0;
+      }
+    }
+  }
+  .anticon-search {
+    color: inherit;
+  }
+  // .ant-input-group-wrapper {
+  //   // .ant-input {
+  //   //   background-color: inherit;
+  //   //   &:not(:focus):not(:hover) {
+  //   //     border-color: transparent;
+  //   //   }
+  //   // }
+  //   .ant-input-group-addon {
+  //     padding: 0;
+  //     border: 0;
+  //     background-color: inherit;
+  //     > * {
+  //       border: 0;
+  //     }
+  //     .ant-btn {
+  //       background-color: rgb(225, 227, 233);
+  //     }
+  //   }
+  // }
+}
