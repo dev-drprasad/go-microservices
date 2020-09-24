@@ -80,11 +80,11 @@ func (h *UserHandler) CreateUser(c echo.Context) error {
 	var r userRequest
 	if err := c.Bind(&r); err != nil {
 		c.Logger().Errorf("Bind of payload -> user failed. %v", err)
-		return c.JSON(http.StatusBadRequest, util.BadRequest)
+		return c.JSON(http.StatusBadRequest, util.NewAPIError(http.StatusText(http.StatusBadRequest)))
 	}
 	if err := validation.Validate(r); err != nil {
 		c.Logger().Errorf("Payload validation failed. %v", err)
-		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+		return c.JSON(http.StatusBadRequest, util.NewAPIError(err.Error()))
 	}
 
 	user := model.User{
@@ -97,10 +97,10 @@ func (h *UserHandler) CreateUser(c echo.Context) error {
 
 	if err := h.svc.CreateUser(ctx, &user); err != nil {
 		if err == service.ErrInvalidRequest {
-			return c.JSON(http.StatusBadRequest, util.BadRequest)
+			return c.JSON(http.StatusBadRequest, util.NewAPIError(http.StatusText(http.StatusBadRequest)))
 		}
 		c.Logger().Errorf("Error occured while creating user. %v", err)
-		return c.JSON(http.StatusInternalServerError, util.Internal)
+		return c.JSON(http.StatusInternalServerError, util.NewAPIError(http.StatusText(http.StatusInternalServerError)))
 	}
 
 	return c.JSON(http.StatusOK, nil)
@@ -116,10 +116,10 @@ func (h *UserHandler) Login(c echo.Context) error {
 	token, err := h.svc.Login(ctx, payload.Username, payload.Password)
 	if err != nil {
 		if err == service.ErrInvalidCredentials {
-			return c.JSON(http.StatusUnauthorized, util.Unauthorized)
+			return c.JSON(http.StatusUnauthorized, util.NewAPIError(http.StatusText(http.StatusUnauthorized)))
 		} else {
 			c.Logger().Errorf("Error occured while login %v", err)
-			return c.JSON(http.StatusInternalServerError, util.Internal)
+			return c.JSON(http.StatusInternalServerError, util.NewAPIError(http.StatusText(http.StatusInternalServerError)))
 		}
 	}
 	return c.JSON(http.StatusOK, map[string]string{"token": token})

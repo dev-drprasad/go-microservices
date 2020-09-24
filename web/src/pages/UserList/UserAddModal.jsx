@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { Modal, Form, Input, message, Select } from "antd";
-import useBROAPI, { useBranches } from "shared/hooks";
+import useAPI, { useBranches } from "shared/hooks";
 
 const layout = {
   labelCol: { span: 8 },
@@ -29,7 +29,7 @@ function useAddUser() {
   const args = useMemo(() => (user ? ["/api/v1/users", { method: "POST", body: JSON.stringify(user) }] : [undefined, undefined]), [
     user,
   ]);
-  const [, status] = useBROAPI(...args);
+  const [, status] = useAPI(...args);
 
   return [setUser, status];
 }

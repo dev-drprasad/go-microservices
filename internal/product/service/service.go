@@ -50,6 +50,14 @@ func (s Service) GetProduct(ctx context.Context, id uint) (*model.Product, error
 	return s.repo.GetProduct(ctx, id)
 }
 
+func (s Service) UpdateProduct(ctx context.Context, id uint, p model.Product) error {
+	return s.repo.UpdateProduct(ctx, id, p)
+}
+
 func (s Service) GetProducts(ctx context.Context) ([]*model.Product, error) {
 	return s.repo.GetProducts(ctx)
+}
+
+func (s Service) AddProductImageURLs(ctx context.Context, imageURLs []string) error {
+	return s.repo.AddProductImageURLs(ctx, imageURLs)
 }

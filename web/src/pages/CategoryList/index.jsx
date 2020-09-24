@@ -3,7 +3,7 @@ import "./styles.scss";
 import { Button, Table } from "antd";
 import React, { useMemo, useState } from "react";
 import { ListActions, NSHandler, Search } from "shared/components";
-import useBROAPI from "shared/hooks";
+import useAPI from "shared/hooks";
 import { listsearch } from "shared/utils";
 
 import CategoryAddModal from "./CategoryAddModal";
@@ -14,7 +14,7 @@ const searchFields = ["id", "name", "address", "phoneNumber", "zipcode"];
 
 function CategoryList() {
   const [shouldShowBranchAddModal, setShouldShowBranchAddModal] = useState(false);
-  const [physicians = [], status, refresh] = useBROAPI("/api/v1/categories");
+  const [physicians = [], status, refresh] = useAPI("/api/v1/categories");
 
   const showBranchAddModal = () => setShouldShowBranchAddModal(true);
   const closeBranchAddModal = () => setShouldShowBranchAddModal(false);

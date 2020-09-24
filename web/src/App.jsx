@@ -6,6 +6,7 @@ import Login from "pages/Login";
 import UserList from "pages/UserList";
 import OrganizationList from "pages/OrganizationList";
 import BranchList from "pages/BranchList";
+import ProductEdit from "pages/ProductEdit";
 import ProductList from "pages/ProductList";
 import ProductAdd from "pages/ProductAdd";
 import NotFound from "pages/NotFound";
@@ -39,16 +40,17 @@ function App() {
   }, []);
 
   return (
-    <AuthContext.Provider value={[user, login]}>
+    <AuthContext.Provider value={[user, login, logout]}>
       <CurrencyContext.Provider value="INR">
         <Router id="router">
           <Login path="login" />
-          <ProtectedRoute user={user} component={Dashboard} logout={logout} path="/">
+          <ProtectedRoute user={user} component={Dashboard} path="/">
             <UserList path="users" />
             <OrganizationList path="organizations" />
             <BranchList path="branches" />
             <ProductList path="products" />
             <ProductAdd path="products/new" />
+            <ProductEdit path="products/:id/edit" />
             <NotFound default />
           </ProtectedRoute>
           <NotFound default />

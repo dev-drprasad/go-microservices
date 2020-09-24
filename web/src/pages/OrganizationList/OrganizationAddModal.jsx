@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { Modal, Form, Input, message } from "antd";
-import useBROAPI from "shared/hooks";
+import useAPI from "shared/hooks";
 
 const layout = {
   labelCol: { span: 8 },
@@ -15,7 +15,7 @@ function useAddOrganization() {
     () => (payload ? ["/api/v1/organizations", { method: "POST", body: JSON.stringify(payload) }] : [undefined, undefined]),
     [payload]
   );
-  const [, status] = useBROAPI(...args);
+  const [, status] = useAPI(...args);
 
   return [setPayload, status];
 }

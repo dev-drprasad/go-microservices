@@ -139,11 +139,11 @@ export function useFetch(url, opts) {
   return [response[0], response[1], refresh];
 }
 
-const RBO_API_BASE_URL =
-    process.env.RBO_UI_RBO_API_BASE_URL || window.location.origin;
-export default function useBROAPI(urlpath, extraOptions) {
-  const [user] = useContext(AuthContext);
-  const url = urlpath && new URL(urlpath, RBO_API_BASE_URL).toString();
+const API_BASE_URL =
+    process.env.REACT_APP_API_BASE_URL || window.location.origin;
+export default function useAPI(urlpath, extraOptions) {
+  const [user, , logout] = useContext(AuthContext);
+  const url = urlpath && new URL(urlpath, API_BASE_URL).toString();
 
   const options = useMemo(
       () => ({
@@ -159,6 +159,9 @@ export default function useBROAPI(urlpath, extraOptions) {
   const [data, status, refresh] = useFetch(url, options);
 
   useEffect(() => {
+    if (status.statusCode === 401) {
+      logout()
+    }
     if (status.isError && !status.errorCaught && status.statusCode >= 400) {
       message.error('Oops! Something went wrong.', 3);
     }
@@ -194,7 +197,7 @@ export function useInsurerIdAndNames() {
     ['fields', ['id', 'name']],
     ['sortBy', 'name'],
   ]);
-  const [insurers = [], status] = useBROAPI(`/api/v1/insurers?${queryParams}`);
+  const [insurers = [], status] = useAPI(`/api/v1/insurers?${queryParams}`);
   return [insurers, status];
 }
 export function useBrands() {
@@ -203,7 +206,7 @@ export function useBrands() {
     ['sortBy', 'name'],
   ]);
   const [patients = [], status, refresh] =
-      useBROAPI(`/api/v1/brands?${queryParams}`);
+      useAPI(`/api/v1/brands?${queryParams}`);
   return [patients, status, refresh];
 }
 export function useCategories() {
@@ -211,32 +214,47 @@ export function useCategories() {
     ['fields', ['id', 'name']],
     ['sortBy', 'name'],
   ]);
-  const [physicians = [], status] =
-      useBROAPI(`/api/v1/categories?${queryParams}`);
+  const [physicians = [], status] = useAPI(`/api/v1/categories?${queryParams}`);
   return [physicians, status];
 }
 
 export function useBranches() {
-  const [branches = [], status] = useBROAPI(`/api/v1/branches`);
+  const [branches = [], status] = useAPI(`/api/v1/branches`);
   return [branches, status];
 }
 
 export function useOrganizations() {
-  const [organizations = [], status] = useBROAPI('/api/v1/organizations');
+  const [organizations = [], status] = useAPI('/api/v1/organizations');
   return [organizations, status];
 }
 
 export function useOrderStatuses() {
-  const [statuses = [], status] = useBROAPI('/api/v1/orderstatuses');
+  const [statuses = [], status] = useAPI('/api/v1/orderstatuses');
   return [statuses, status];
 }
 
 export function useEquiments() {
-  const [equiments = [], status] = useBROAPI('/api/v1/equipments');
+  const [equiments = [], status] = useAPI('/api/v1/equipments');
   return [equiments, status];
 }
 
 export function useSalesUsers() {
-  const [users = [], status] = useBROAPI(`/api/v1/sales-users`);
+  const [users = [], status] = useAPI(`/api/v1/sales-users`);
   return [users, status];
+}
+
+export function useProduct(id) {
+  const [payload, setPayload] = useState(undefined);
+  const [product, status, refresh] =
+      useAPI(id ? `/api/v1/products/${id}` : undefined);
+
+  const saveOpts = useMemo(() => {
+    if (!payload) return [undefined];
+    const [urlpath, method] =
+        id ? [`/api/v1/products/${id}`, 'PUT'] : ['/api/v1/products', 'POST'];
+    return [urlpath, {method, body: JSON.stringify(payload)}];
+  }, [payload, id]);
+  const [, saveStatus] = useAPI(...saveOpts);
+
+  return [product, status, refresh, setPayload, saveStatus];
 }

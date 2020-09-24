@@ -3,7 +3,7 @@ import "./styles.scss";
 import { Button, Table } from "antd";
 import React, { useMemo, useState } from "react";
 import { ListActions, NSHandler, Search } from "shared/components";
-import useBROAPI from "shared/hooks";
+import useAPI from "shared/hooks";
 import { listsearch } from "shared/utils";
 
 import OrganizationAddModal from "./OrganizationAddModal";
@@ -14,7 +14,7 @@ const searchFields = ["id", "name", "address", "phoneNumber", "zipcode"];
 
 function OrganizationList() {
   const [shouldShowOrganizationAddModal, setShouldShowOrganizationAddModal] = useState(false);
-  const [physicians = [], status, refresh] = useBROAPI("/api/v1/organizations");
+  const [physicians = [], status, refresh] = useAPI("/api/v1/organizations");
 
   const showOrganizationAddModal = () => setShouldShowOrganizationAddModal(true);
   const closeOrganizationAddModal = () => setShouldShowOrganizationAddModal(false);

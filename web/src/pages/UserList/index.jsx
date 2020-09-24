@@ -3,7 +3,7 @@ import "./styles.scss";
 import { Button, Table } from "antd";
 import React, { useState, useMemo } from "react";
 import { NSHandler, ListActions, Search } from "shared/components";
-import useBROAPI from "shared/hooks";
+import useAPI from "shared/hooks";
 
 import UserAddModal from "./UserAddModal";
 import { listsearch } from "shared/utils";
@@ -14,7 +14,7 @@ const searchFields = ["id", "name", "username", "team.name"];
 
 function UserList() {
   const [shouldShowUserAddModal, setShouldShowUserAddModal] = useState(false);
-  const [users = [], status, refresh] = useBROAPI("/api/v1/users");
+  const [users = [], status, refresh] = useAPI("/api/v1/users");
 
   const showUserAddModal = () => setShouldShowUserAddModal(true);
   const closeUserAddModal = () => setShouldShowUserAddModal(false);

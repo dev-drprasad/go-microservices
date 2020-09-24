@@ -18,10 +18,10 @@ const (
 	authUserKey
 )
 
-var Unauthorized = map[string]string{"message": "You are not authorized to access this resource"}
-var Internal = map[string]string{"message": "An error occured"}
-var BadRequest = map[string]string{"message": "Invalid payload"}
-var NotFound = map[string]string{"message": ""}
+// var Unauthorized = map[string]string{"message": "You are not authorized to access this resource"}
+// var Internal = map[string]string{"message": "An error occured"}
+// var BadRequest = map[string]string{"message": "Invalid payload"}
+// var NotFound = map[string]string{"message": ""}
 
 var ErrNoResourceFound = errors.New("no resource found")
 var ErrFKViolation = errors.New("violates foreign key constraint")
@@ -79,4 +79,12 @@ func (v *Float64) UnmarshalJSON(data []byte) error {
 	}
 
 	return nil
+}
+
+type apiError struct {
+	Message string `json:"message"`
+}
+
+func NewAPIError(message string) *apiError {
+	return &apiError{Message: message}
 }

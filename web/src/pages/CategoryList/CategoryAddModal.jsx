@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
-import useBROAPI from "shared/hooks";
+import useAPI from "shared/hooks";
 import { Modal, Form, Input, message } from "antd";
 
 const layout = {
@@ -16,7 +16,7 @@ function useAddCategory() {
     () => (payload ? ["/api/v1/categories", { method: "POST", body: JSON.stringify(payload) }] : [undefined, undefined]),
     [payload]
   );
-  const [, status] = useBROAPI(...args);
+  const [, status] = useAPI(...args);
 
   return [setPayload, status];
 }

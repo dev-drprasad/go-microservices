@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { Modal, Form, Input, message, Select } from "antd";
-import useBROAPI, { useOrganizations } from "shared/hooks";
+import useAPI, { useOrganizations } from "shared/hooks";
 
 const layout = {
   labelCol: { span: 8 },
@@ -16,7 +16,7 @@ function useAddBranch() {
     () => (payload ? ["/api/v1/branches", { method: "POST", body: JSON.stringify(payload) }] : [undefined, undefined]),
     [payload]
   );
-  const [, status] = useBROAPI(...args);
+  const [, status] = useAPI(...args);
 
   return [setPayload, status];
 }

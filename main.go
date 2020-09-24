@@ -24,6 +24,32 @@ const (
 	dbname   = "postgres"
 )
 
+func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+
+		header := c.Request().Header.Get("Authorization")
+		tokenStr := strings.TrimPrefix(header, "Bearer ")
+
+		if tokenStr == "" {
+			return c.JSON(http.StatusUnauthorized, util.NewAPIError(http.StatusText(http.StatusUnauthorized)))
+		}
+
+		user, err := service.AuthCheck(tokenStr)
+		if err != nil {
+			c.Logger().Errorf(err.Error())
+			return c.JSON(http.StatusUnauthorized, util.NewAPIError(http.StatusText(http.StatusUnauthorized)))
+		}
+
+		c.Set("user", user)
+
+		if err := next(c); err != nil {
+			c.Error(err)
+		}
+
+		return nil
+	}
+}
+
 func main() {
 	connstr := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
@@ -56,6 +82,8 @@ func main() {
 	e.Use(middleware.RequestID())
 	e.Use(util.LoggerWithRequestID)
 
+	e.Static("/static", "/tmp")
+
 	userhandler := userrest.New(db)
 	orghandler := orgrest.New(db)
 	producthandler := productrest.New(db)
@@ -63,31 +91,7 @@ func main() {
 	e.POST("/api/v1/login", userhandler.Login)
 
 	r := e.Group("/api/v1")
-	r.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-
-			header := c.Request().Header.Get("Authorization")
-			tokenStr := strings.TrimPrefix(header, "Bearer ")
-
-			if tokenStr == "" {
-				return c.JSON(http.StatusUnauthorized, util.Unauthorized)
-			}
-
-			user, err := service.AuthCheck(tokenStr)
-			if err != nil {
-				c.Logger().Errorf(err.Error())
-				return c.JSON(http.StatusUnauthorized, util.Unauthorized)
-			}
-
-			c.Set("user", user)
-
-			if err := next(c); err != nil {
-				c.Error(err)
-			}
-
-			return nil
-		}
-	})
+	r.Use(AuthMiddleware)
 
 	r.GET("/users", userhandler.GetUsers)
 	r.GET("/users/:id", userhandler.GetUser)
@@ -109,6 +113,7 @@ func main() {
 
 	r.POST("/products", producthandler.CreateProduct)
 	r.GET("/products/:id", producthandler.GetProduct)
+	r.PUT("/products/:id", producthandler.UpdateProduct)
 	r.GET("/products", producthandler.GetProducts)
 	r.POST("/products/images/upload", producthandler.UploadImages)
 

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useContext } from "react";
 import { Form, Input, Button, Alert, Typography } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import useBROAPI from "shared/hooks";
+import useAPI from "shared/hooks";
 import { AuthContext } from "shared/contexts";
 import { navigate } from "@reach/router";
 import "./styles.scss";
@@ -22,7 +22,7 @@ function useLogin() {
   const args = useMemo(() => (body ? ["/api/v1/login", { method: "POST", body: JSON.stringify(body) }] : [undefined, undefined]), [
     body,
   ]);
-  const [data, status] = useBROAPI(...args);
+  const [data, status] = useAPI(...args);
   let user;
   if (status.isSuccess) {
     const token = data?.token;

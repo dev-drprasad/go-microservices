@@ -1,27 +1,2 @@
 .product-add-container {
-  display: grid;
-  grid-template-columns: 4fr 2fr;
-  column-gap: 16px;
-  #product-create-form {
-    // margin: 48px auto;
-    padding: 80px 64px;
-    background-color: white;
-
-    .ant-form-item.inline > .ant-form-item-control > .ant-form-item-control-input > .ant-form-item-control-input-content {
-      display: flex;
-    }
-  }
-  .image-upload-container {
-    background-color: white;
-    .preview-image-container {
-      height: 300px;
-      line-height: 300px;
-      margin-bottom: 16px;
-      text-align: center;
-      > img {
-        max-width: 100%;
-        max-height: 100%;
-      }
-    }
-  }
 }

@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"fmt"
 	"gomicroservices/internal/product/model"
 	"gomicroservices/internal/util"
 	"strings"
@@ -11,15 +12,17 @@ import (
 )
 
 type Repo interface {
-	GetBrands(ctx context.Context) ([]*model.Brand, error)
-	GetBrand(ctx context.Context, id uint) (*model.Brand, error)
 	CreateBrand(ctx context.Context, branch model.Brand) error
+	GetBrand(ctx context.Context, id uint) (*model.Brand, error)
+	UpdateProduct(ctx context.Context, id uint, p model.Product) error
+	GetBrands(ctx context.Context) ([]*model.Brand, error)
 	GetCategories(ctx context.Context) ([]*model.Category, error)
 	GetCategory(ctx context.Context, id uint) (*model.Category, error)
 	CreateCategory(ctx context.Context, branch model.Category) error
 	CreateProduct(ctx context.Context, p model.Product) error
 	GetProduct(ctx context.Context, id uint) (*model.Product, error)
 	GetProducts(ctx context.Context) ([]*model.Product, error)
+	AddProductImageURLs(ctx context.Context, imageURLs []string) error
 }
 
 type DBRepo struct {
@@ -163,6 +166,22 @@ func (repo DBRepo) GetProduct(ctx context.Context, id uint) (*model.Product, err
 	return &p, nil
 }
 
+func (repo DBRepo) UpdateProduct(ctx context.Context, id uint, p model.Product) error {
+	stmt := `
+		UPDATE products
+		SET name = $1, cost = $2, sellPrice = $3, brandId = $4, categoryId = $5, imageUrls = $6, stock = $7
+		WHERE id = $8
+	`
+	_, err := repo.db.Exec(ctx, stmt, p.Name, p.Cost, p.SellPrice, p.BrandID, p.CategoryID, p.ImageURLs, p.Stock, id)
+	if err != nil {
+		if strings.Contains(err.Error(), util.ErrFKViolation.Error()) {
+			return util.ErrFKViolation
+		}
+		return errors.Wrapf(err, "Failed to update product. id=%v", id)
+	}
+	return nil
+}
+
 func (repo DBRepo) GetProducts(ctx context.Context) ([]*model.Product, error) {
 	stmt := `
 		SELECT
@@ -190,4 +209,45 @@ func (repo DBRepo) GetProducts(ctx context.Context) ([]*model.Product, error) {
 	}
 
 	return products, nil
+}
+
+func makeBulkInsertQuery(stmt string, perRow int, rows int) string {
+	placeholders := make([]string, 0, rows)
+	for i := 0; i < rows; i++ {
+		placeholder := make([]string, 0, perRow)
+		for j := i; j < i+perRow; j++ {
+			placeholder = append(placeholder, fmt.Sprintf("$%d", j+i+1))
+		}
+		placeholderStr := strings.Join(placeholder, ", ")
+		placeholders = append(placeholders, "("+placeholderStr+")")
+
+	}
+	return fmt.Sprintf(stmt, strings.Join(placeholders, ","))
+}
+
+func strtointerface(in []string) []interface{} {
+	new := make([]interface{}, len(in))
+	for i, v := range in {
+		new[i] = v
+	}
+	return new
+}
+
+func (repo DBRepo) AddProductImageURLs(ctx context.Context, imageURLs []string) error {
+	stmt := `
+		INSERT INTO product_images
+			(imageUrl)
+		VALUES %s
+	`
+	stmt = makeBulkInsertQuery(stmt, 1, len(imageURLs))
+
+	_, err := repo.db.Exec(ctx, stmt, strtointerface(imageURLs)...)
+	if err != nil {
+		if strings.Contains(err.Error(), util.ErrFKViolation.Error()) {
+			return util.ErrFKViolation
+		}
+		return errors.Wrapf(err, "Failed to execute the query")
+	}
+
+	return nil
 }

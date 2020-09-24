@@ -7,6 +7,7 @@ import (
 	"gomicroservices/internal/product/service"
 	"gomicroservices/internal/util"
 	"io/ioutil"
+	"mime"
 	"net/http"
 	"os"
 	"path"
@@ -19,7 +20,7 @@ import (
 )
 
 const maxUploadSize = 1 * 1024 * 1024
-const uploadPath = "./uploads"
+const uploadPath = "/tmp"
 
 type ProductHandler struct {
 	service service.Service
@@ -46,17 +47,17 @@ func (h *ProductHandler) CreateBrand(c echo.Context) error {
 
 	var r brandRequest
 	if err := c.Bind(&r); err != nil {
-		return c.JSON(http.StatusBadRequest, util.BadRequest)
+		return c.JSON(http.StatusBadRequest, util.NewAPIError(http.StatusText(http.StatusBadRequest)))
 	}
 
 	if err := validation.Validate(r); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+		return c.JSON(http.StatusBadRequest, util.NewAPIError(err.Error()))
 	}
 
 	branch := model.Brand{Name: r.Name}
 	if err := h.service.CreateBrand(ctx, branch); err != nil {
 		c.Logger().Errorf("Failed to create brand : %v", err)
-		return c.JSON(http.StatusInternalServerError, util.Internal)
+		return c.JSON(http.StatusInternalServerError, util.NewAPIError(http.StatusText(http.StatusInternalServerError)))
 	}
 
 	return c.JSON(http.StatusOK, nil)
@@ -66,7 +67,7 @@ func (h *ProductHandler) GetBrand(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	branch, err := h.service.GetBrand(util.NewContextWithLogger(c), uint(id))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, util.Internal)
+		return c.JSON(http.StatusInternalServerError, util.NewAPIError(http.StatusText(http.StatusInternalServerError)))
 	}
 	return c.JSON(http.StatusOK, branch)
 }
@@ -75,7 +76,7 @@ func (h *ProductHandler) GetBrands(c echo.Context) error {
 	branches, err := h.service.GetBrands(util.NewContextWithLogger(c))
 	if err != nil {
 		c.Logger().Errorf("Failed to get brands : %v", err)
-		return c.JSON(http.StatusInternalServerError, util.Internal)
+		return c.JSON(http.StatusInternalServerError, util.NewAPIError(http.StatusText(http.StatusInternalServerError)))
 	}
 	return c.JSON(http.StatusOK, branches)
 }
@@ -95,17 +96,17 @@ func (h *ProductHandler) CreateCategory(c echo.Context) error {
 
 	var r categoryRequest
 	if err := c.Bind(&r); err != nil {
-		return c.JSON(http.StatusBadRequest, util.BadRequest)
+		return c.JSON(http.StatusBadRequest, util.NewAPIError(http.StatusText(http.StatusBadRequest)))
 	}
 
 	if err := validation.Validate(r); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+		return c.JSON(http.StatusBadRequest, util.NewAPIError(err.Error()))
 	}
 
 	category := model.Category{Name: r.Name}
 	if err := h.service.CreateCategory(ctx, category); err != nil {
 		c.Logger().Errorf("Failed to create category : %v", err)
-		return c.JSON(http.StatusInternalServerError, util.Internal)
+		return c.JSON(http.StatusInternalServerError, util.NewAPIError(http.StatusText(http.StatusInternalServerError)))
 	}
 
 	return c.JSON(http.StatusOK, nil)
@@ -115,7 +116,7 @@ func (h *ProductHandler) GetCategory(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	category, err := h.service.GetCategory(util.NewContextWithLogger(c), uint(id))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, util.Internal)
+		return c.JSON(http.StatusInternalServerError, util.NewAPIError(http.StatusText(http.StatusInternalServerError)))
 	}
 	return c.JSON(http.StatusOK, category)
 }
@@ -124,7 +125,7 @@ func (h *ProductHandler) GetCategories(c echo.Context) error {
 	categories, err := h.service.GetCategories(util.NewContextWithLogger(c))
 	if err != nil {
 		c.Logger().Errorf("Failed to get categories : %v", err)
-		return c.JSON(http.StatusInternalServerError, util.Internal)
+		return c.JSON(http.StatusInternalServerError, util.NewAPIError(http.StatusText(http.StatusInternalServerError)))
 	}
 	return c.JSON(http.StatusOK, categories)
 }
@@ -156,17 +157,17 @@ func (h *ProductHandler) CreateProduct(c echo.Context) error {
 	var r productRequest
 	if err := c.Bind(&r); err != nil {
 		c.Logger().Errorf("Failed to bind product payload : %v", err)
-		return c.JSON(http.StatusBadRequest, util.BadRequest)
+		return c.JSON(http.StatusBadRequest, util.NewAPIError(http.StatusText(http.StatusBadRequest)))
 	}
 
 	if err := validation.Validate(r); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+		return c.JSON(http.StatusBadRequest, util.NewAPIError(err.Error()))
 	}
 
-	product := model.Product{Name: r.Name, Cost: float64(r.Cost), SellPrice: float64(r.SellPrice), BrandID: r.BrandID, CategoryID: r.CategoryID, ImageURLs: []string{}, Stock: uint(r.Stock)}
+	product := model.Product{Name: r.Name, Cost: float64(r.Cost), SellPrice: float64(r.SellPrice), BrandID: r.BrandID, CategoryID: r.CategoryID, ImageURLs: r.ImageURLs, Stock: uint(r.Stock)}
 	if err := h.service.CreateProduct(ctx, product); err != nil {
 		c.Logger().Errorf("Failed to create product : %v", err)
-		return c.JSON(http.StatusInternalServerError, util.Internal)
+		return c.JSON(http.StatusInternalServerError, util.NewAPIError(http.StatusText(http.StatusInternalServerError)))
 	}
 
 	return c.JSON(http.StatusOK, nil)
@@ -176,21 +177,44 @@ func (h *ProductHandler) GetProduct(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	category, err := h.service.GetProduct(util.NewContextWithLogger(c), uint(id))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, util.Internal)
+		return c.JSON(http.StatusInternalServerError, util.NewAPIError(http.StatusText(http.StatusInternalServerError)))
 	}
 	return c.JSON(http.StatusOK, category)
+}
+
+func (h *ProductHandler) UpdateProduct(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	var r productRequest
+	if err := c.Bind(&r); err != nil {
+		c.Logger().Errorf("Failed to bind product payload : %v", err)
+		return c.JSON(http.StatusBadRequest, util.NewAPIError(http.StatusText(http.StatusBadRequest)))
+	}
+
+	if err := validation.Validate(r); err != nil {
+		return c.JSON(http.StatusBadRequest, util.NewAPIError(err.Error()))
+	}
+
+	product := model.Product{Name: r.Name, Cost: float64(r.Cost), SellPrice: float64(r.SellPrice), BrandID: r.BrandID, CategoryID: r.CategoryID, ImageURLs: r.ImageURLs, Stock: uint(r.Stock)}
+	err := h.service.UpdateProduct(util.NewContextWithLogger(c), uint(id), product)
+	if err != nil {
+		c.Logger().Errorf("Failed to update product : %v", err)
+		return c.JSON(http.StatusInternalServerError, util.NewAPIError(http.StatusText(http.StatusInternalServerError)))
+	}
+	return c.JSON(http.StatusOK, nil)
 }
 
 func (h *ProductHandler) GetProducts(c echo.Context) error {
 	categories, err := h.service.GetProducts(util.NewContextWithLogger(c))
 	if err != nil {
 		c.Logger().Errorf("Failed to get products : %v", err)
-		return c.JSON(http.StatusInternalServerError, util.Internal)
+		return c.JSON(http.StatusInternalServerError, util.NewAPIError(http.StatusText(http.StatusInternalServerError)))
 	}
 	return c.JSON(http.StatusOK, categories)
 }
 
 func (h *ProductHandler) UploadImages(c echo.Context) error {
+	ctx := util.NewContextWithLogger(c)
 	if err := c.Request().ParseMultipartForm(maxUploadSize); err != nil {
 
 		c.Logger().Errorf("Could not parse multipart form: %v", err)
@@ -225,12 +249,18 @@ func (h *ProductHandler) UploadImages(c echo.Context) error {
 			return c.JSON(http.StatusBadRequest, map[string]string{"message": "only jpeg/jpg is allowed"})
 		}
 
+		fileEndings, err := mime.ExtensionsByType(filetype)
+		if err != nil {
+			c.Logger().Errorf("Failed to get extension from mime type : %v", err)
+			return c.JSON(http.StatusBadRequest, nil)
+		}
+
 		b := make([]byte, 10)
 		if _, err = rand.Read(b); err != nil {
 			c.Logger().Errorf("Failed to generate random name : %v", err)
 			return c.JSON(http.StatusInternalServerError, nil)
 		}
-		filename := fmt.Sprintf("%x%d%s", b, time.Now().UnixNano(), path.Ext(file.Filename))
+		filename := fmt.Sprintf("%x%d%s", b, time.Now().UnixNano(), fileEndings[0])
 
 		dst, err := os.Create(path.Join(uploadPath, filename))
 		if err != nil {
@@ -246,6 +276,11 @@ func (h *ProductHandler) UploadImages(c echo.Context) error {
 		}
 
 		filenames = append(filenames, filename)
+	}
+
+	if err := h.service.AddProductImageURLs(ctx, filenames); err != nil {
+		c.Logger().Errorf("Failed to update image urls : %v", err)
+		return c.JSON(http.StatusInternalServerError, nil)
 	}
 
 	return c.JSON(http.StatusOK, filenames)

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useContext } from "react";
 import { Button, Table, DatePicker } from "antd";
 import { Link } from "@reach/router";
-import useBROAPI from "shared/hooks";
+import useAPI from "shared/hooks";
 import { NSHandler, Search, ListActions } from "shared/components";
 import "./styles.scss";
 import { formatcurrency, listsearch } from "shared/utils";
@@ -24,12 +24,12 @@ function physicianNameAnchored(_, order) {
 function orderIdAnchored(id) {
   return <Link to={`/orders/${id}`}>{id}</Link>;
 }
-const searchFields = ["id", "serviceDate", "status", "orderedBy.firstName", "orderedBy.lastName", "prescribedBy.name"];
+const searchFields = ["id", "name"];
 function ProductList({ navigate }) {
   const [{ searchText, filters }, setSearchText] = useState({ searchText: "", filters: [] });
   const currency = useContext(CurrencyContext);
 
-  const [products = [], status] = useBROAPI("/api/v1/products");
+  const [products = [], status] = useAPI("/api/v1/products");
   const handleDateSelect = (_, dateStr) => {
     setSearchText({
       searchText,
@@ -49,7 +49,7 @@ function ProductList({ navigate }) {
     return {
       onClick: (e) => {
         if (e.target.tagName !== "A") {
-          navigate(`/products/${product.id}`);
+          navigate(`/products/${product.id}/edit`);
         }
       },
     };
