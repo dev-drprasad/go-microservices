@@ -2,6 +2,9 @@ package util
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
@@ -12,10 +15,21 @@ type key int
 
 const (
 	logKey key = iota
+	authUserKey
 )
 
-func NewContextWithLogger(ctx echo.Context) context.Context {
-	return context.WithValue(context.Background(), logKey, ctx.Logger())
+var Unauthorized = map[string]string{"message": "You are not authorized to access this resource"}
+var Internal = map[string]string{"message": "An error occured"}
+var BadRequest = map[string]string{"message": "Invalid payload"}
+var NotFound = map[string]string{"message": ""}
+
+var ErrNoResourceFound = errors.New("no resource found")
+var ErrFKViolation = errors.New("violates foreign key constraint")
+
+func NewContextWithLogger(ectx echo.Context) context.Context {
+	ctx := ectx.Request().Context()
+	ctx = context.WithValue(ctx, "user", ectx.Get("user"))
+	return context.WithValue(ctx, logKey, ectx.Logger())
 }
 
 func GetLoggerFromContext(ctx context.Context) echo.Logger {
@@ -43,4 +57,26 @@ func NewContextFromMetadata(ctx context.Context) context.Context {
 	logger := log.New(rID)
 	logger.SetLevel(log.DEBUG)
 	return context.WithValue(ctx, logKey, logger)
+}
+
+type Float64 float64
+
+func (v *Float64) UnmarshalJSON(data []byte) error {
+	var temp interface{}
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+
+	switch temp.(type) {
+	case float64:
+		*v = Float64(temp.(float64))
+	case int64:
+		t := temp.(int64)
+		*v = Float64(t)
+	default:
+		return fmt.Errorf("Expected int64 or float64 as cost. but got %T", temp)
+
+	}
+
+	return nil
 }

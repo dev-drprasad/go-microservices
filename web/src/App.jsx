@@ -4,8 +4,12 @@ import { Router } from "@reach/router";
 import Dashboard from "Dashboard";
 import Login from "pages/Login";
 import UserList from "pages/UserList";
+import OrganizationList from "pages/OrganizationList";
+import BranchList from "pages/BranchList";
+import ProductList from "pages/ProductList";
+import ProductAdd from "pages/ProductAdd";
 import NotFound from "pages/NotFound";
-import { AuthContext } from "shared/contexts";
+import { AuthContext, CurrencyContext } from "shared/contexts";
 import { ProtectedRoute } from "shared/components";
 import "./App.less";
 
@@ -36,14 +40,20 @@ function App() {
 
   return (
     <AuthContext.Provider value={[user, login]}>
-      <Router id="router">
-        <Login path="login" />
-        <ProtectedRoute user={user} component={Dashboard} logout={logout} path="/">
-          <UserList path="users" />
+      <CurrencyContext.Provider value="INR">
+        <Router id="router">
+          <Login path="login" />
+          <ProtectedRoute user={user} component={Dashboard} logout={logout} path="/">
+            <UserList path="users" />
+            <OrganizationList path="organizations" />
+            <BranchList path="branches" />
+            <ProductList path="products" />
+            <ProductAdd path="products/new" />
+            <NotFound default />
+          </ProtectedRoute>
           <NotFound default />
-        </ProtectedRoute>
-        <NotFound default />
-      </Router>
+        </Router>
+      </CurrencyContext.Provider>
     </AuthContext.Provider>
   );
 }

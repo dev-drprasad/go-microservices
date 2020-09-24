@@ -1,0 +1,2 @@
+- http://www.davejsaunders.com/2016/11/10/user-authentication-with-postgres.html
+- https://stackoverflow.com/questions/15726535/postgresql-which-datatype-should-be-used-for-currency

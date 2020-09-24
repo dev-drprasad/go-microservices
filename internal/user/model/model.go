@@ -3,11 +3,14 @@ package model
 import "gomicroservices/internal/organization/model"
 
 type User struct {
-	ID       uint   `json:"id"`
+	ID uint `json:"id"`
+
 	Name     string `json:"name"`
 	Username string `json:"username"`
 	Password string `json:"password"`
-	BranchID uint64 `json:"branchId"`
+	BranchID uint   `json:"branchId"`
+	Role     string `json:"role"`
 
-	WorksAt *model.Branch `json:"branch"`
+	OrganizationID uint          `json:"organizationId"`
+	Branch         *model.Branch `json:"branch"`
 }

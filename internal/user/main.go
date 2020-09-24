@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"gomicroservices/internal/user/rest"
 	"gomicroservices/internal/util"
 
 	"github.com/labstack/echo/v4"
@@ -21,7 +20,7 @@ func main() {
 	e.Use(util.LoggerWithRequestID)
 
 	// e.GET("api/v1/users", rest.GetUsers)
-	e.GET("api/v1/users/:id", rest.GetUser)
+	// e.GET("api/v1/users/:id", rest.GetUser)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":9091"))

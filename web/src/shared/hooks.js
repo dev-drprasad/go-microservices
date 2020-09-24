@@ -159,7 +159,7 @@ export default function useBROAPI(urlpath, extraOptions) {
   const [data, status, refresh] = useFetch(url, options);
 
   useEffect(() => {
-    if (!status.erroCaught && status.statusCode >= 400) {
+    if (status.isError && !status.errorCaught && status.statusCode >= 400) {
       message.error('Oops! Something went wrong.', 3);
     }
   }, [status]);
@@ -197,21 +197,22 @@ export function useInsurerIdAndNames() {
   const [insurers = [], status] = useBROAPI(`/api/v1/insurers?${queryParams}`);
   return [insurers, status];
 }
-export function usePatientIdAndNames() {
+export function useBrands() {
   const queryParams = new URLSearchParams([
     ['fields', ['id', 'name']],
     ['sortBy', 'name'],
   ]);
-  const [patients = [], status] = useBROAPI(`/api/v1/patients?${queryParams}`);
-  return [patients, status];
+  const [patients = [], status, refresh] =
+      useBROAPI(`/api/v1/brands?${queryParams}`);
+  return [patients, status, refresh];
 }
-export function usePhysicianIdAndNames() {
+export function useCategories() {
   const queryParams = new URLSearchParams([
     ['fields', ['id', 'name']],
     ['sortBy', 'name'],
   ]);
   const [physicians = [], status] =
-      useBROAPI(`/api/v1/physicians?${queryParams}`);
+      useBROAPI(`/api/v1/categories?${queryParams}`);
   return [physicians, status];
 }
 
@@ -220,9 +221,9 @@ export function useBranches() {
   return [branches, status];
 }
 
-export function useRoles() {
-  const [roles = [], status] = useBROAPI('/api/v1/roles');
-  return [roles, status];
+export function useOrganizations() {
+  const [organizations = [], status] = useBROAPI('/api/v1/organizations');
+  return [organizations, status];
 }
 
 export function useOrderStatuses() {

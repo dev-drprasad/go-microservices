@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useContext } from "react";
-import { Form, Input, Button, Alert } from "antd";
+import { Form, Input, Button, Alert, Typography } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import useBROAPI from "shared/hooks";
 import { AuthContext } from "shared/contexts";
@@ -14,6 +14,8 @@ const decodeJWT = (token) => {
     return undefined;
   }
 };
+
+const logoUrl = "/logo.png";
 
 function useLogin() {
   const [body, setBody] = useState(undefined);
@@ -53,9 +55,7 @@ function Login() {
   return (
     <div className="login-page">
       <Form className="login-form white-bg" initialValues={{ remember: true }} onFinish={handleFormSubmit} autoComplete="off">
-        <div className="logo-wrapper">
-          <img src="/bro-logo.png" alt="bro logo" />
-        </div>
+        <div className="logo-wrapper" style={{ backgroundImage: `url(${logoUrl})` }}></div>
         <Form.Item name="username" rules={[{ required: true, message: "Input your username" }]}>
           <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" size="large" autoFocus />
         </Form.Item>
