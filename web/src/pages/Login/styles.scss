@@ -22,7 +22,6 @@
 }
 .gray-bg {
   .ant-input-affix-wrapper {
-    // background-color: rgb(225, 227, 233);
     color: rgb(66, 82, 110);
     &:not(.ant-input-affix-wrapper-focused):not(:hover) {
       border-color: transparent;
@@ -36,6 +35,12 @@
         background-color: inherit;
         color: inherit;
       }
+    }
+  }
+  .ant-radio-button-wrapper {
+    color: rgb(66, 82, 110);
+    &:not(.ant-radio-button-wrapper-checked) {
+      border-color: transparent;
     }
   }
 }

@@ -1,5 +1,15 @@
 CREATE DOMAIN uint AS int CHECK(VALUE >= 0);
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+CREATE OR REPLACE FUNCTION triggerSetUpdatedAt()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updatedAt = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
 CREATE TABLE IF NOT EXISTS organizations (
   id serial PRIMARY KEY,
   createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -67,4 +77,19 @@ CREATE TABLE IF NOT EXISTS product_images (
   productId uint NULL,
   FOREIGN KEY (productId) REFERENCES products(id)
 );
+
+CREATE TABLE IF NOT EXISTS customers (
+  id SERIAL NOT NULL PRIMARY KEY,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  name varchar(30) NOT NULL,
+  address varchar(255) NOT NULL,
+  zipcode varchar(10) NOT NULL,
+  phoneNumber varchar(15) NOT NULL
+);
+
+CREATE TRIGGER setUpdatedAt
+BEFORE UPDATE ON customers
+FOR EACH ROW
+EXECUTE PROCEDURE triggerSetUpdatedAt();
 

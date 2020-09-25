@@ -6,5 +6,15 @@
     "**/node_modules": true,
     "**/bower_components": true,
     "**/*.code-search": true
-  }
+  },
+  "editor.formatOnSave": true,
+  "files.autoSave": "off",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.organizeImports": true
+  },
+  "eslint.options": {
+    "extensions": [".js", ".jsx"]
+  },
+  "eslint.validate": ["javascript", "javascriptreact"]
 }

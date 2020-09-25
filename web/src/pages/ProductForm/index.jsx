@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { Form, Select, Button, Input, InputNumber, Radio, Upload, Card } from "antd";
+import { EyeOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Card, Form, Input, InputNumber, Radio, Select, Upload } from "antd";
 import BrandAddModal from "pages/BrandList/BrandAddModal";
 import CategoryAddModal from "pages/CategoryList/CategoryAddModal";
-import { PlusOutlined, EyeOutlined } from "@ant-design/icons";
-import { useCategories, useBrands } from "shared/hooks";
+import React, { useContext, useState } from "react";
+import { CurrencyContext, LocaleContext } from "shared/contexts";
+import { useBrands, useCategories } from "shared/hooks";
 import { formatcurrency } from "shared/utils";
-
 import "./styles.scss";
 
 const layout = {
@@ -46,8 +46,11 @@ const renderSellPrice = (getFieldValue, formatter) => {
   return <Seperator> = {formatter(sellPrice)}</Seperator>;
 };
 
-function ProductForm({ id, initialValues, currency, uploadHeaders, onFinish }) {
+function ProductForm({ id, initialValues, uploadHeaders, onFinish }) {
   const [form] = Form.useForm();
+
+  const [currency] = useContext(CurrencyContext);
+  const [locale] = useContext(LocaleContext);
 
   const [imagePreviewUrl, setImagePreviewUrl] = useState();
   const [shouldShowBrandAddModal, setShouldShowBrandAddModal] = useState(false);
@@ -127,7 +130,7 @@ function ProductForm({ id, initialValues, currency, uploadHeaders, onFinish }) {
               <Radio.Group options={priceCalcMethods} optionType="button" buttonStyle="solid" />
             </Form.Item>
             <Form.Item dependencies={["cost", "priceCalcValue", "priceCalcMode"]}>
-              {({ getFieldValue }) => renderSellPrice(getFieldValue, (v) => formatcurrency(currency, v))}
+              {({ getFieldValue }) => renderSellPrice(getFieldValue, (v) => formatcurrency(locale, currency, v))}
             </Form.Item>
           </Input.Group>
         </Form.Item>

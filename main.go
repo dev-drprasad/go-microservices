@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	customerrest "gomicroservices/internal/customer/rest"
 	orgrest "gomicroservices/internal/organization/rest"
 	productrest "gomicroservices/internal/product/rest"
 	userrest "gomicroservices/internal/user/rest"
@@ -87,35 +88,42 @@ func main() {
 	userhandler := userrest.New(db)
 	orghandler := orgrest.New(db)
 	producthandler := productrest.New(db)
+	customerhandler := customerrest.New(db)
 
 	e.POST("/api/v1/login", userhandler.Login)
 
-	r := e.Group("/api/v1")
-	r.Use(AuthMiddleware)
+	api := e.Group("/api/v1")
+	api.Use(AuthMiddleware)
 
-	r.GET("/users", userhandler.GetUsers)
-	r.GET("/users/:id", userhandler.GetUser)
-	r.POST("/users", userhandler.CreateUser)
+	api.GET("/users", userhandler.GetUsers)
+	api.GET("/users/:id", userhandler.GetUser)
+	api.POST("/users", userhandler.CreateUser)
 
-	r.POST("/organizations", orghandler.CreateOrganization)
-	r.GET("/organizations", orghandler.GetOrganizations)
-	r.GET("/organizations/:id/branches", orghandler.GetBranchesByOrganization)
-	r.GET("/branches", orghandler.GetBranches)
+	api.POST("/organizations", orghandler.CreateOrganization)
+	api.GET("/organizations", orghandler.GetOrganizations)
+	api.GET("/organizations/:id/branches", orghandler.GetBranchesByOrganization)
+	api.GET("/branches", orghandler.GetBranches)
 	// r.POST("/branches", orghandler.CreateBranch)
 
-	r.POST("/brands", producthandler.CreateBrand)
-	r.GET("/brands/:id", producthandler.GetBrand)
-	r.GET("/brands", producthandler.GetBrands)
+	api.POST("/brands", producthandler.CreateBrand)
+	api.GET("/brands/:id", producthandler.GetBrand)
+	api.GET("/brands", producthandler.GetBrands)
 
-	r.POST("/categories", producthandler.CreateCategory)
-	r.GET("/categories/:id", producthandler.GetCategory)
-	r.GET("/categories", producthandler.GetCategories)
+	api.POST("/categories", producthandler.CreateCategory)
+	api.GET("/categories/:id", producthandler.GetCategory)
+	api.GET("/categories", producthandler.GetCategories)
 
-	r.POST("/products", producthandler.CreateProduct)
-	r.GET("/products/:id", producthandler.GetProduct)
-	r.PUT("/products/:id", producthandler.UpdateProduct)
-	r.GET("/products", producthandler.GetProducts)
-	r.POST("/products/images/upload", producthandler.UploadImages)
+	api.POST("/products", producthandler.CreateProduct)
+	api.GET("/products/:id", producthandler.GetProduct)
+	api.PUT("/products/:id", producthandler.UpdateProduct)
+	api.GET("/products", producthandler.GetProducts)
+	api.POST("/products/images/upload", producthandler.UploadImages)
+
+	api.POST("/customers", customerhandler.AddCustomer)
+	api.GET("/customers/:id", customerhandler.GetCustomer)
+	api.PUT("/customers/:id", customerhandler.UpdateCustomer)
+	api.GET("/customers", customerhandler.GetCustomers)
+	api.GET("/customers/aggregations/new", customerhandler.NewCustomersCount)
 
 	e.Logger.Fatal(e.Start(":9090"))
 }

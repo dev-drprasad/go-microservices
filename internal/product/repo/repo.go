@@ -226,11 +226,11 @@ func makeBulkInsertQuery(stmt string, perRow int, rows int) string {
 }
 
 func strtointerface(in []string) []interface{} {
-	new := make([]interface{}, len(in))
+	out := make([]interface{}, len(in))
 	for i, v := range in {
-		new[i] = v
+		out[i] = v
 	}
-	return new
+	return out
 }
 
 func (repo DBRepo) AddProductImageURLs(ctx context.Context, imageURLs []string) error {

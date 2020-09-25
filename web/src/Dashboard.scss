@@ -1,6 +1,8 @@
 .ant-layout {
+  height: 100%;
   .ant-layout-sider {
     background: linear-gradient(135deg, rgb(15, 112, 255) 0%, rgb(33, 213, 210) 100%);
+    overflow-y: auto;
     .logo {
       height: 32px;
       background: rgba(255, 255, 255, 0.2);
@@ -10,6 +12,31 @@
       background: transparent;
       .ant-menu {
         background: transparent;
+      }
+    }
+
+    .ant-layout-sider-children {
+      display: grid;
+      height: 100%;
+      grid-template-rows: 60px auto min-content;
+      .bottom {
+        align-self: end;
+        padding: 16px 4px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 4px;
+        .ant-select {
+          color: rgba(255, 255, 255, 0.85);
+          font-weight: bold;
+          font-size: 12px;
+          .ant-select-selector {
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background-color: inherit;
+          }
+          .ant-select-arrow {
+            color: inherit;
+          }
+        }
       }
     }
   }

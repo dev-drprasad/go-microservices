@@ -1,14 +1,15 @@
-import React, { useContext } from "react";
-import { LogoutOutlined, UserAddOutlined, ShoppingCartOutlined, SettingOutlined, GiftOutlined, HomeOutlined } from "@ant-design/icons";
+import { GiftOutlined, HomeOutlined, LogoutOutlined, SettingOutlined, ShoppingCartOutlined, UserAddOutlined } from "@ant-design/icons";
 import { Link } from "@reach/router";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, Select } from "antd";
+import React, { useContext } from "react";
+import { AuthContext, CurrencyContext, LocaleContext } from "shared/contexts";
 import "./Dashboard.scss";
-import { AuthContext } from "shared/contexts";
 
 const { Content, Sider } = Layout;
 const { SubMenu } = Menu;
 
 const routes = [
+  { path: "customers", label: "Customers", allowed: ["admin", "staff"] },
   { path: "organizations", label: "Organizations", allowed: ["superadmin"] },
   { path: "branches", label: "Branches", allowed: ["superadmin", "admin"] },
   { path: "users", label: "Users", allowed: ["superadmin", "admin"] },
@@ -16,13 +17,11 @@ const routes = [
 
 function Dashboard({ children, logout, location }) {
   const [user] = useContext(AuthContext);
+  const [locale, locales, setLocale] = useContext(LocaleContext);
+  const [currency, currencies, setCurrency] = useContext(CurrencyContext);
   const defaultSelectedKey = location.pathname === "/" ? "home" : location.pathname.slice(1);
   return (
-    <Layout
-      style={{
-        height: "100%",
-      }}
-    >
+    <Layout>
       <Sider>
         <div className="logo" />
         <Menu theme="dark" defaultSelectedKeys={[defaultSelectedKey]} defaultOpenKeys={["administration"]} mode="inline">
@@ -51,6 +50,10 @@ function Dashboard({ children, logout, location }) {
             Logout
           </Menu.Item>
         </Menu>
+        <div className="bottom">
+          <Select options={locales} defaultValue={locale} onChange={setLocale} />
+          <Select options={currencies} defaultValue={currency} onChange={setCurrency} />
+        </div>
       </Sider>
       <Layout className="site-layout">
         <Content style={{ padding: "32px 16px 16px 16px" }} id="main">

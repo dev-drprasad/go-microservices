@@ -26,6 +26,7 @@
 .search-container {
   color: rgba(66, 82, 110, 1);
   background-color: rgb(225, 227, 233);
+  height: fit-content;
   .ant-input-search {
     .ant-input-suffix {
       .anticon::before {

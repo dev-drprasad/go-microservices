@@ -1,5 +1,74 @@
+$primary-color: #00cc83;
+$text-color: #172b4d;
+
 .orders-container {
   .actions {
     margin-bottom: 16px;
+  }
+}
+
+.product-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 320px;
+  column-gap: 16px;
+  .product-card {
+    min-width: 0;
+    .ant-card-cover {
+      height: 70%;
+      padding: 16px;
+      .ant-carousel {
+        height: 100%;
+        .slick-slider {
+          height: inherit;
+          .slick-list {
+            height: inherit;
+            .slick-track {
+              height: inherit;
+              .slick-slide {
+                height: inherit;
+                > div {
+                  height: inherit;
+                  text-align: center;
+                  img {
+                    height: inherit;
+                    width: auto !important;
+                  }
+                }
+              }
+            }
+          }
+          .slick-dots > li {
+            width: 8px;
+            height: 8px;
+            border-radius: 7px;
+            overflow: hidden;
+            border: 3px solid rgba($color: #dddddd, $alpha: 0.5);
+            > button {
+              height: 100%;
+              background-color: rgba($text-color, 0.4);
+            }
+            &.slick-active > button {
+              background-color: rgba($text-color, 0.6);
+            }
+          }
+        }
+      }
+    }
+    .ant-card-body {
+      height: 30%;
+      .ant-card-meta {
+        height: 3.2em;
+      }
+      .stock {
+        .anticon {
+          margin-right: 8px;
+          color: rgba($text-color, 0.5);
+        }
+      }
+    }
+    .price {
+      font-size: 1.2em;
+    }
   }
 }

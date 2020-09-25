@@ -1,0 +1,28 @@
+.home {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 16px;
+  height: 100%;
+  .ant-card {
+    background-color: inherit;
+    // .ant-card-head {
+    //   background-color: inherit;
+    //   padding-left: 0;
+    // }
+    .ant-card-body {
+      background-color: white;
+      border-radius: 10px;
+      .recharts-responsive-container {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+.recharts-tooltip-wrapper {
+  .recharts-default-tooltip {
+    border: none !important;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02), 0 4px 8px rgba(0, 0, 0, 0.04);
+  }
+}

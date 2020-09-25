@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
@@ -87,4 +88,9 @@ type apiError struct {
 
 func NewAPIError(message string) *apiError {
 	return &apiError{Message: message}
+}
+
+type CountOnDate struct {
+	Date  time.Time `json:"date"`
+	Count uint      `json:"count"`
 }

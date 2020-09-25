@@ -1,6 +1,6 @@
+import { Input } from "antd";
 import React from "react";
 import "./Search.scss";
-import { Input } from "antd";
 
 export default function Search({ onSearch, size, ...rest }) {
   // const [searchText, setSearchText] = useState("");
@@ -18,7 +18,6 @@ export default function Search({ onSearch, size, ...rest }) {
       <Input.Search
         placeholder="Search for anything..."
         onSearch={onSearch}
-        size="large"
         // suffix={<CloseCircleOutlined style={{ fontSize: 14, color: "rgba(66, 82, 110, 0.75)" }} />}
         allowClear
       />
