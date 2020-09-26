@@ -5,15 +5,20 @@
   margin-bottom: 16px;
   .product-form {
     // margin: 48px auto;
-    padding: 80px 64px;
+    padding: 64px 48px;
     background-color: white;
 
-    .ant-form-item.inline > .ant-form-item-control > .ant-form-item-control-input > .ant-form-item-control-input-content {
-      display: flex;
-    }
+    // .ant-form-item.inline > .ant-form-item-control > .ant-form-item-control-input > .ant-form-item-control-input-content {
+    //   display: flex;
+    // }
   }
   .image-upload-container {
     background-color: white;
+    .ant-upload-list-picture-card .ant-upload-list-item-thumbnail img {
+      width: auto;
+      margin: 0 auto;
+      object-fit: contain;
+    }
     .preview-image-container {
       height: 300px;
       line-height: 300px;

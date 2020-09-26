@@ -38,18 +38,23 @@ $text-color: #172b4d;
               }
             }
           }
-          .slick-dots > li {
-            width: 8px;
-            height: 8px;
-            border-radius: 7px;
-            overflow: hidden;
-            border: 3px solid rgba($color: #dddddd, $alpha: 0.5);
-            > button {
-              height: 100%;
-              background-color: rgba($text-color, 0.4);
+          .slick-dots {
+            &.slick-dots-bottom {
+              bottom: 0;
             }
-            &.slick-active > button {
-              background-color: rgba($text-color, 0.6);
+            > li {
+              width: 8px;
+              height: 8px;
+              border-radius: 7px;
+              overflow: hidden;
+              border: 3px solid rgba($color: #dddddd, $alpha: 0.5);
+              > button {
+                height: 100%;
+                background-color: rgba($text-color, 0.4);
+              }
+              &.slick-active > button {
+                background-color: rgba($text-color, 0.6);
+              }
             }
           }
         }

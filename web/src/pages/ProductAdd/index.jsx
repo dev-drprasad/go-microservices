@@ -26,8 +26,7 @@ function ProductAdd({ navigate }) {
 
   const initialValues = {
     cost: 0,
-    priceCalcValue: 10,
-    priceCalcMode: "%",
+    sellPrice: 0,
     imageUrls: new Set([]),
   };
 

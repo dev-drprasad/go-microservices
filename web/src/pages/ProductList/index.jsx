@@ -49,12 +49,11 @@ const StockFilter = memo(
     const didMount = useRef(false);
     const [value, setValue] = useState();
     const handleChange = (e) => {
-      // console.log("e.target.value :>> ", e.target.value);
       setValue(e.target.value);
     };
     const handleClick = (e) => {
       if (e.target.checked) {
-        // setValue(undefined);
+        setValue(undefined);
       }
     };
 
@@ -150,7 +149,14 @@ function ProductList({ navigate }) {
                   </Carousel>
                 }
               >
-                <Card.Meta title={<a href={`/products/${product.id}/edit`}>{product.name}</a>} description="" />
+                <Card.Meta
+                  title={
+                    <a href={`/products/${product.id}/edit`} title={product.name}>
+                      {product.name}
+                    </a>
+                  }
+                  description=""
+                />
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <div className="stock">
                     <Icon component={InStockIcon} />

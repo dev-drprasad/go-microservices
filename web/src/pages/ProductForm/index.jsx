@@ -1,5 +1,5 @@
 import { EyeOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Card, Form, Input, InputNumber, Radio, Select, Upload } from "antd";
+import { Button, Card, Form, Input, InputNumber, Select, Upload } from "antd";
 import BrandAddModal from "pages/BrandList/BrandAddModal";
 import CategoryAddModal from "pages/CategoryList/CategoryAddModal";
 import React, { useContext, useState } from "react";
@@ -13,22 +13,8 @@ const layout = {
   wrapperCol: { span: 20 },
 };
 
-const priceCalcMethods = [
-  { label: "%", value: "%" },
-  { label: "#", value: "#" },
-];
-
 const ruleRequired = { required: true };
 const ruleJustRequired = [ruleRequired];
-
-const getSellPrice = (cost, priceCalcMode, priceCalcValue) => {
-  switch (priceCalcMode) {
-    case "%":
-      return cost + (cost * priceCalcValue) / 100;
-    default:
-      return cost + priceCalcValue;
-  }
-};
 
 function getBase64(file) {
   return new Promise((resolve, reject) => {
@@ -39,11 +25,17 @@ function getBase64(file) {
   });
 }
 
-const Seperator = ({ children }) => <span style={{ padding: "0 16px", fontSize: 16 }}>{children}</span>;
+const round = (n, fractions = 2) => Math.round(n.toFixed(fractions) * 10 ** fractions) / 10 ** fractions;
 
 const renderSellPrice = (getFieldValue, formatter) => {
-  const sellPrice = getSellPrice(getFieldValue("cost"), getFieldValue("priceCalcMode"), getFieldValue("priceCalcValue"));
-  return <Seperator> = {formatter(sellPrice)}</Seperator>;
+  const cost = getFieldValue("cost");
+  const sellPrice = getFieldValue("sellPrice");
+  return (
+    <div style={{ fontSize: "1rem", textAlign: "center" }}>
+      {formatter(round(sellPrice - cost))}
+      <span style={{ fontSize: "0.6rem" }}>({round((sellPrice - cost) / 100)}%)</span>
+    </div>
+  );
 };
 
 function ProductForm({ id, initialValues, uploadHeaders, onFinish }) {
@@ -55,11 +47,11 @@ function ProductForm({ id, initialValues, uploadHeaders, onFinish }) {
   const [imagePreviewUrl, setImagePreviewUrl] = useState();
   const [shouldShowBrandAddModal, setShouldShowBrandAddModal] = useState(false);
   const [shouldShowCategoryAddModal, setShouldShowCategoryAddModal] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState(initialValues.imageUrls.size);
   const [brands, brandsStatus, refreshBrands] = useBrands();
   const [categories, categoriesStatus, refreshCategories] = useCategories();
 
   const handleSubmit = (payload) => {
-    payload.sellPrice = getSellPrice(payload.cost, payload.priceCalcMode, payload.priceCalcValue);
     payload.imageUrls = [...form.getFieldValue("imageUrls")];
     console.log("payload :>> ", payload);
     onFinish(payload);
@@ -92,14 +84,15 @@ function ProductForm({ id, initialValues, uploadHeaders, onFinish }) {
   };
 
   const handleImageChange = ({ file }) => {
+    const imageURLs = form.getFieldValue("imageUrls");
     if (file.status === "done" && file.response) {
       // this event will fire multiple times
       // So, made form.imageUrls as `Set` to avoid duplication
-      const imageURLs = form.getFieldValue("imageUrls");
       file.response.forEach(imageURLs.add, imageURLs);
     } else if (file.status === "removed") {
-      form.getFieldValue("imageUrls").delete(file.uid);
+      imageURLs.delete(file.uid);
     }
+    setUploadedImages(imageURLs.size);
   };
 
   const brandOptions = brands.map(({ id, name }) => ({
@@ -117,24 +110,32 @@ function ProductForm({ id, initialValues, uploadHeaders, onFinish }) {
         <Form.Item name="name" label="Name" rules={ruleJustRequired}>
           <Input />
         </Form.Item>
-        <Form.Item label="Price">
-          <Input.Group compact>
-            <Form.Item name="cost" rules={ruleJustRequired}>
-              <InputNumber style={{ width: 200 }} />
-            </Form.Item>
-            <Seperator>+</Seperator>
-            <Form.Item name="priceCalcValue" noStyle>
-              <InputNumber />
-            </Form.Item>
-            <Form.Item name="priceCalcMode" noStyle>
-              <Radio.Group options={priceCalcMethods} optionType="button" buttonStyle="solid" />
-            </Form.Item>
-            <Form.Item dependencies={["cost", "priceCalcValue", "priceCalcMode"]}>
-              {({ getFieldValue }) => renderSellPrice(getFieldValue, (v) => formatcurrency(locale, currency, v))}
-            </Form.Item>
-          </Input.Group>
-        </Form.Item>
-        <Form.Item className="inline" wrapperCol={{ span: 24 }}>
+        <div className="flex">
+          <Form.Item
+            label="Price"
+            style={{ width: "40%" }}
+            name="sellPrice"
+            rules={ruleJustRequired}
+            labelCol={{ span: 10 }}
+            wrapperCol={{ span: 14 }}
+          >
+            <InputNumber style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item
+            label="Cost"
+            style={{ width: "35%" }}
+            name="cost"
+            rules={ruleJustRequired}
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+          >
+            <InputNumber style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item style={{ width: "25%" }} wrapperCol={{ span: 24 }} dependencies={["cost", "sellPrice"]}>
+            {({ getFieldValue }) => renderSellPrice(getFieldValue, (v) => formatcurrency(locale, currency, v))}
+          </Form.Item>
+        </div>
+        <div className="flex">
           <Form.Item
             name="brandId"
             label="Brand"
@@ -181,7 +182,7 @@ function ProductForm({ id, initialValues, uploadHeaders, onFinish }) {
               showSearch
             />
           </Form.Item>
-        </Form.Item>
+        </div>
         <Form.Item name="stock" label="Stock" rules={ruleJustRequired}>
           <InputNumber min={1} />
         </Form.Item>
@@ -198,7 +199,6 @@ function ProductForm({ id, initialValues, uploadHeaders, onFinish }) {
             </span>
           )}
         </div>
-        <Form.Item></Form.Item>
         <Upload
           multiple
           action="/api/v1/products/images/upload"
@@ -210,10 +210,12 @@ function ProductForm({ id, initialValues, uploadHeaders, onFinish }) {
           onChange={handleImageChange}
           defaultFileList={[...initialValues.imageUrls].map((u) => ({ url: `/static/${u}`, uid: u }))}
         >
-          <div>
-            <PlusOutlined />
-            <div style={{ marginLeft: 8 }}>Upload</div>
-          </div>
+          {uploadedImages < 6 && (
+            <div>
+              <PlusOutlined />
+              <div style={{ marginLeft: 8 }}>Upload</div>
+            </div>
+          )}
         </Upload>
       </Card>
     </div>
