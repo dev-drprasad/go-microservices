@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	customerrest "gomicroservices/internal/customer/rest"
+	orderrest "gomicroservices/internal/order/rest"
 	orgrest "gomicroservices/internal/organization/rest"
 	productrest "gomicroservices/internal/product/rest"
 	userrest "gomicroservices/internal/user/rest"
@@ -89,6 +90,7 @@ func main() {
 	orghandler := orgrest.New(db)
 	producthandler := productrest.New(db)
 	customerhandler := customerrest.New(db)
+	orderhandler := orderrest.New(db)
 
 	e.POST("/api/v1/login", userhandler.Login)
 
@@ -118,6 +120,10 @@ func main() {
 	api.PUT("/products/:id", producthandler.UpdateProduct)
 	api.GET("/products", producthandler.GetProducts)
 	api.POST("/products/images/upload", producthandler.UploadImages)
+
+	api.POST("/orders", orderhandler.PlaceOrder)
+	api.GET("/orders/:id", orderhandler.GetOrder)
+	api.GET("/orders", orderhandler.GetOrders)
 
 	api.POST("/customers", customerhandler.AddCustomer)
 	api.GET("/customers/:id", customerhandler.GetCustomer)

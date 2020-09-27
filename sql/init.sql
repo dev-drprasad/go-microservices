@@ -93,3 +93,38 @@ BEFORE UPDATE ON customers
 FOR EACH ROW
 EXECUTE PROCEDURE triggerSetUpdatedAt();
 
+CREATE TYPE orderStatus AS ENUM('new', 'preparation', 'ready', 'delivered');
+
+CREATE TABLE IF NOT EXISTS orders (
+  id SERIAL NOT NULL PRIMARY KEY,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  
+  status orderStatus NOT NULL DEFAULT 'new',
+  customerId int NOT NULL,
+  FOREIGN KEY (customerId) REFERENCES customers(id)
+);
+
+CREATE TRIGGER setUpdatedAt
+BEFORE UPDATE ON orders
+FOR EACH ROW
+EXECUTE PROCEDURE triggerSetUpdatedAt();
+
+CREATE TABLE IF NOT EXISTS order_products (
+  id SERIAL NOT NULL PRIMARY KEY,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+  orderId int NOT NULL,
+  productId int NOT NULL,
+  unitPrice numeric(8,2) NOT NULL,
+  quantity uint NOT NULL,
+
+  FOREIGN KEY (orderId) REFERENCES orders(id),
+  FOREIGN KEY (productId) REFERENCES products(id)
+);
+
+CREATE TRIGGER setUpdatedAt
+BEFORE UPDATE ON order_products
+FOR EACH ROW
+EXECUTE PROCEDURE triggerSetUpdatedAt();

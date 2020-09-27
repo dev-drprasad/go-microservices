@@ -9,6 +9,7 @@ import CustomerList from "pages/CustomerList";
 import Home from "pages/Home";
 import Login from "pages/Login";
 import NotFound from "pages/NotFound";
+import OrderList from "pages/OrderList";
 import OrganizationList from "pages/OrganizationList";
 import ProductAdd from "pages/ProductAdd";
 import ProductEdit from "pages/ProductEdit";
@@ -73,6 +74,7 @@ function App() {
                 <UserList path="users" />
                 <OrganizationList path="organizations" />
                 <BranchList path="branches" />
+                <OrderList path="orders" />
                 <ProductList path="products" />
                 <ProductAdd path="products/new" />
                 <ProductEdit path="products/:id/edit" />

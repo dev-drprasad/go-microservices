@@ -14,6 +14,7 @@ const layout = {
 };
 
 const ruleRequired = { required: true };
+const ruleGreaterThan0 = [ruleRequired, { type: "number", min: 1 }];
 const ruleJustRequired = [ruleRequired];
 
 function getBase64(file) {
@@ -183,8 +184,8 @@ function ProductForm({ id, initialValues, uploadHeaders, onFinish }) {
             />
           </Form.Item>
         </div>
-        <Form.Item name="stock" label="Stock" rules={ruleJustRequired}>
-          <InputNumber min={1} />
+        <Form.Item name="stock" label="Stock" rules={ruleGreaterThan0}>
+          <InputNumber min={0} />
         </Form.Item>
         {shouldShowBrandAddModal && <BrandAddModal onClose={closeBrandAddModal} onAdd={handleBrandAdd} />}
         {shouldShowCategoryAddModal && <CategoryAddModal onClose={closeCategoryAddModal} onAdd={handleCategoryAdd} />}

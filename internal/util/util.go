@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -93,4 +95,38 @@ func NewAPIError(message string) *apiError {
 type CountOnDate struct {
 	Date  time.Time `json:"date"`
 	Count uint      `json:"count"`
+}
+
+// https://stackoverflow.com/questions/12486436
+func MakeInsertSQLWithValue(stmt string, value string, rows int, start int) string {
+	// Combine the base SQL string and N value strings
+	values := make([]string, 0, rows)
+	for i := 0; i < rows; i++ {
+		values = append(values, "("+value+")")
+	}
+
+	stmt = fmt.Sprintf(stmt, strings.Join(values, ","))
+
+	// Convert all of the "?" to "$1", "$2", "$3", etc.
+	// (which is the way that pgx expects query variables to be)
+	numArgs := strings.Count(stmt, "?")
+	stmt = strings.ReplaceAll(stmt, "?", "$%v")
+	replaced := make([]interface{}, 0, rows)
+	for i := start; i <= numArgs; i++ {
+		replaced = append(replaced, strconv.Itoa(i))
+	}
+	return fmt.Sprintf(stmt, replaced...)
+}
+
+// MakeInsertSQL is a helper function to prepare a SQL query for a bulk insert
+// MakeInsertSQL is used over getBulkInsertSQL when all of the values are plain question
+// marks (e.g. a 1-for-1 value insertion)
+// The example given for getBulkInsertSQL is such a query
+func MakeInsertSQL(stmt string, perRow int, rows int) string {
+	placeholders := make([]string, 0, perRow)
+	for i := 0; i < perRow; i++ {
+		placeholders = append(placeholders, "?")
+	}
+	value := strings.Join(placeholders, ", ")
+	return MakeInsertSQLWithValue(stmt, value, rows, 1)
 }
