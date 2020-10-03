@@ -1,0 +1,66 @@
+version: "3"
+services:
+  webapp:
+    image: ${COMPOSE_PROJECT_NAME}-webapp
+    build:
+      context: .
+      dockerfile: ./webapp.Dockerfile
+    ports:
+      - ${PORT}:80
+    volumes:
+      - node_modules:/app/node_modules
+    container_name: ${COMPOSE_PROJECT_NAME}-webapp
+    environment:
+      REACT_APP_API_BASE_URL: http://api:9090
+    tty: true
+    depends_on:
+      - api
+    networks:
+      - net
+  api:
+    image: ${COMPOSE_PROJECT_NAME}-api
+    restart: always
+    build:
+      context: .
+      dockerfile: ./api.Dockerfile
+    volumes:
+      - uploads:/tmp
+    container_name: ${COMPOSE_PROJECT_NAME}-api
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090"]
+    depends_on:
+      - postgres
+    environment:
+      SUGAR: ${SUGAR}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      ENV: production
+    tty: true
+    networks:
+      - net
+
+  postgres:
+    image: postgres:13.0-alpine
+    container_name: ${COMPOSE_PROJECT_NAME}-db
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ${PWD}/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+    healthcheck:
+      test: pg_isready -U postgres
+      timeout: 10s
+      start_period: 5s
+    networks:
+      - net
+
+volumes:
+  node_modules:
+  uploads:
+
+networks:
+  net:
+    driver: bridge

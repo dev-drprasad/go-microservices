@@ -2,6 +2,15 @@
 - https://stackoverflow.com/questions/15726535/postgresql-which-datatype-should-be-used-for-currency
 - https://x-team.com/blog/automatic-timestamps-with-postgresql/
 - https://medium.com/building-the-system/how-to-store-dates-and-times-in-postgresql-269bda8d6403
+- https://stackoverflow.com/questions/61534421/postgres-array-of-golang-structs
+- https://dba.stackexchange.com/questions/65576/insert-from-a-select-combined-with-a-single-value
+- https://chartio.com/resources/tutorials/how-to-log-queries-in-postgresql/
+- https://stackoverflow.com/questions/47377088/postgres-inserting-data-from-another-table-for-one-column-only
+- https://dba.stackexchange.com/questions/176935/how-would-i-track-all-price-changes-in-a-db-in-order-to-get-the-price-of-x-pro
 
 - https://www.zupzup.org/go-http-file-upload-download/
 - https://github.com/jackc/pgx/issues/764#issuecomment-685249471
+- https://medium.com/@gosamv/using-gos-context-library-for-logging-4a8feea26690#.ddh6trpto
+- https://blog.gopheracademy.com/advent-2016/context-logging/
+- https://medium.com/@cep21/how-to-correctly-use-context-context-in-go-1-7-8f2c0fafdf39
+- https://github.com/snowzach/gorestapi

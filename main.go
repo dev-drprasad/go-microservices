@@ -11,6 +11,7 @@ import (
 	"gomicroservices/internal/user/service"
 	"gomicroservices/internal/util"
 	"net/http"
+	"os"
 	"strings"
 
 	pgx "github.com/jackc/pgx/v4/pgxpool"
@@ -20,7 +21,7 @@ import (
 
 const (
 	host     = "localhost"
-	port     = 5432
+	port     = "5432"
 	user     = "postgres"
 	password = ""
 	dbname   = "postgres"
@@ -53,10 +54,20 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 }
 
 func main() {
-	connstr := fmt.Sprintf("host=%s port=%d user=%s "+
+	env := os.Getenv("ENV")
+	connstr := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
-	// connstr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", user, password, host, port, dbname)
+	if env == "production" {
+		dbUser := os.Getenv("DB_USER")
+		dbPass := os.Getenv("DB_PASSWORD")
+		dbName := os.Getenv("DB_NAME")
+		dbHost := os.Getenv("DB_HOST")
+		dbPort := os.Getenv("DB_PORT")
+		connstr = fmt.Sprintf("host=%s port=%s user=%s "+
+			"password=%s dbname=%s sslmode=disable",
+			dbHost, dbPort, dbUser, dbPass, dbName)
+	}
 
 	ctx := context.Background()
 	db, err := pgx.Connect(ctx, connstr)

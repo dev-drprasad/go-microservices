@@ -28,6 +28,7 @@ const (
 
 var ErrNoResourceFound = errors.New("no resource found")
 var ErrFKViolation = errors.New("violates foreign key constraint")
+var ErrViolation = errors.New("sql integrity violation")
 
 func NewContextWithLogger(ectx echo.Context) context.Context {
 	ctx := ectx.Request().Context()
@@ -129,4 +130,15 @@ func MakeInsertSQL(stmt string, perRow int, rows int) string {
 	}
 	value := strings.Join(placeholders, ", ")
 	return MakeInsertSQLWithValue(stmt, value, rows, 1)
+}
+
+func CheckSQLViolation(err error) error {
+	// https://www.postgresql.org/docs/13/errcodes-appendix.html
+	codes := []string{"23000", "23001", "23502", "23503", "23505", "23514"}
+	for _, code := range codes {
+		if strings.Contains(err.Error(), code) {
+			return ErrViolation
+		}
+	}
+	return err
 }
