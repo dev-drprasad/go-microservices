@@ -15,8 +15,8 @@ const routes = [
   { path: "users", label: "Users", allowed: ["superadmin", "admin"] },
 ];
 
-function Dashboard({ children, logout, location }) {
-  const [user] = useContext(AuthContext);
+function Dashboard({ children, location }) {
+  const [user, , logout] = useContext(AuthContext);
   const [locale, locales, setLocale] = useContext(LocaleContext);
   const [currency, currencies, setCurrency] = useContext(CurrencyContext);
   const defaultSelectedKey = location.pathname === "/" ? "home" : location.pathname.slice(1);
