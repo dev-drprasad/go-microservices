@@ -44,7 +44,6 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		c.Set("user", user)
-
 		if err := next(c); err != nil {
 			c.Error(err)
 		}
