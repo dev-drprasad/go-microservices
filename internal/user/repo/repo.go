@@ -60,7 +60,7 @@ func (repo DBRepo) GetUsersByOrganization(ctx context.Context, organizationID ui
 		SELECT users.id, users.name, users.username, users.branchId
 		FROM users
 		LEFT JOIN branches ON branches.id = users.branchId
-		WHERE branches.organizationId = $1
+		WHERE branches.id = $1
 	`
 
 	rows, err := repo.db.Query(ctx, stmt, organizationID)
@@ -95,7 +95,7 @@ func (repo DBRepo) GetUser(ctx context.Context, id uint) (*model.User, error) {
 	return &user, nil
 }
 
-func (repo DBRepo) CreateUser(ctx context.Context, user *model.User) error {
+func (repo DBRepo) CreateUser(ctx context.Context, u *model.User) error {
 	stmt := `
 		INSERT INTO users
 			(name, username, branchId, password, role)
@@ -104,12 +104,12 @@ func (repo DBRepo) CreateUser(ctx context.Context, user *model.User) error {
 		RETURNING id`
 	var userID uint64
 
-	err := repo.db.QueryRow(ctx, stmt, user.Name, user.Username, user.BranchID, user.Password, user.Role).Scan(&userID)
+	err := repo.db.QueryRow(ctx, stmt, u.Name, u.Username, u.BranchID, u.Password, u.Role).Scan(&userID)
 	if err != nil {
 		if strings.Contains(err.Error(), ErrFKViolation.Error()) {
 			return ErrFKViolation
 		}
-		return errors.Wrapf(err, "Failed to execute the query username=%v", user.Username)
+		return errors.Wrapf(err, "Failed to execute the query username=%v", u.Username)
 	}
 
 	return nil
@@ -117,7 +117,7 @@ func (repo DBRepo) CreateUser(ctx context.Context, user *model.User) error {
 
 func (repo DBRepo) GetUserByUsernamePassword(ctx context.Context, username string, password string) (*model.User, error) {
 	stmt := `
-		SELECT users.id, users.name, users.username, users.role, users.branchId, organizations.id
+		SELECT users.id, users.name, users.username, users.role, users.branchId
 		FROM users
 		LEFT JOIN branches ON branches.id = users.branchId
 		LEFT JOIN organizations ON branches.organizationId = organizations.id
@@ -125,7 +125,7 @@ func (repo DBRepo) GetUserByUsernamePassword(ctx context.Context, username strin
 	`
 
 	var user model.User
-	err := repo.db.QueryRow(ctx, stmt, username, password).Scan(&user.ID, &user.Name, &user.Username, &user.Role, &user.BranchID, &user.OrganizationID)
+	err := repo.db.QueryRow(ctx, stmt, username, password).Scan(&user.ID, &user.Name, &user.Username, &user.Role, &user.BranchID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrNoUserFound

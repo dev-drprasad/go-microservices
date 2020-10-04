@@ -11,6 +11,5 @@ type User struct {
 	BranchID uint   `json:"branchId"`
 	Role     string `json:"role"`
 
-	OrganizationID uint          `json:"organizationId"`
-	Branch         *model.Branch `json:"branch"`
+	Branch *model.Branch `json:"branch"`
 }

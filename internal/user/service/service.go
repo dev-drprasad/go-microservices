@@ -80,7 +80,7 @@ func (s *Service) GetUsers(ctx context.Context) (users []*model.User, err error)
 	if authUser.Role == "superadmin" {
 		users, err = s.repo.GetUsers(ctx)
 	} else {
-		users, err = s.repo.GetUsersByOrganization(ctx, authUser.OrganizationID)
+		users, err = s.repo.GetUsersByOrganization(ctx, authUser.BranchID)
 	}
 
 	return
@@ -104,7 +104,6 @@ func generateUserToken(u *model.User, sugar string) (string, error) {
 	claims["username"] = u.Username
 	claims["role"] = u.Role
 	claims["branchId"] = u.BranchID
-	claims["organizationId"] = u.OrganizationID
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -132,11 +131,10 @@ func AuthCheck(tokenStr string) (*model.User, error) {
 	}
 
 	user := model.User{
-		ID:             uint(claims["id"].(float64)),
-		Username:       claims["username"].(string),
-		Role:           claims["role"].(string),
-		BranchID:       uint(claims["branchId"].(float64)),
-		OrganizationID: uint(claims["organizationId"].(float64)),
+		ID:       uint(claims["id"].(float64)),
+		Username: claims["username"].(string),
+		Role:     claims["role"].(string),
+		BranchID: uint(claims["branchId"].(float64)),
 	}
 	return &user, nil
 }

@@ -41,11 +41,11 @@ CREATE TABLE IF NOT EXISTS users (
   role userRole NOT NULL DEFAULT 'staff'
 );
 ALTER TABLE users ADD COLUMN branchId int NOT NULL REFERENCES branches(id);
-ALTER TABLE users ADD COLUMN organizationId int NOT NULL REFERENCES organizations(id);
+-- ALTER TABLE users ADD COLUMN organizationId int NOT NULL REFERENCES organizations(id);
 
 INSERT INTO organizations (name) VALUES ('Super Admin');
 INSERT INTO branches (name, organizationId, address, phoneNumber) VALUES ('Super Admin', 1, '', '');
-INSERT INTO users (name, username, password, branchId, organizationId, role) VALUES ('Super Admin', 'superadmin', crypt('00000', gen_salt('bf')), 1, 1, 'superadmin');
+INSERT INTO users (name, username, password, branchId, role) VALUES ('Super Admin', 'superadmin', crypt('00000', gen_salt('bf')), 1, 'superadmin');
 
 CREATE TABLE IF NOT EXISTS brands (
   id serial PRIMARY KEY,
