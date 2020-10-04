@@ -115,7 +115,7 @@ func main() {
 	api.GET("/organizations", orghandler.GetOrganizations)
 	api.GET("/organizations/:id/branches", orghandler.GetBranchesByOrganization)
 	api.GET("/branches", orghandler.GetBranches)
-	// r.POST("/branches", orghandler.CreateBranch)
+	api.POST("/branches", orghandler.CreateBranch)
 
 	api.POST("/brands", producthandler.CreateBrand)
 	api.GET("/brands/:id", producthandler.GetBrand)
