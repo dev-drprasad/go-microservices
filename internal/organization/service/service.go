@@ -4,7 +4,6 @@ import (
 	"context"
 	"gomicroservices/internal/organization/model"
 	"gomicroservices/internal/organization/repo"
-	usermodel "gomicroservices/internal/user/model"
 	"gomicroservices/internal/util"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -66,18 +65,7 @@ func (s Service) GetBranchesByOrganization(ctx context.Context, organizationId u
 }
 
 func (s Service) GetBranches(ctx context.Context) (branches []*model.Branch, err error) {
-	log := util.GetLoggerFromContext(ctx)
-
-	authUser := ctx.Value("user").(*usermodel.User)
-
-	if authUser.Role == "superadmin" {
-		branches, err = s.repo.GetBranches(ctx)
-	} else {
-		log.Infof("Reading branches of organization. organizationId=%d", authUser.OrganizationID)
-		branches, err = s.repo.GetBranchesByOrganization(ctx, authUser.OrganizationID)
-	}
-
-	return
+	return s.repo.GetBranches(ctx)
 }
 
 func (s Service) GetOrganizations(ctx context.Context) ([]*model.Organization, error) {
