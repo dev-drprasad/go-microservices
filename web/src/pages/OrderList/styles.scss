@@ -3,3 +3,46 @@
     margin-bottom: 16px;
   }
 }
+
+.order-place-form-modal {
+  .order-place-form-container {
+    display: grid;
+    grid-template-columns: 400px auto;
+    column-gap: 32px;
+    height: calc(100vh - 350px);
+    .ant-input-search {
+      margin-bottom: 32px;
+    }
+    .product-list-form {
+      overflow-y: auto;
+      height: 100%;
+      .ant-list-item-meta-avatar {
+        > img {
+          height: 60px;
+        }
+      }
+      .sel-product {
+        display: grid;
+        grid-template-columns: minmax(min-content, max-content) minmax(min-content, max-content);
+        grid-template-rows: auto auto;
+        grid-template-areas:
+          "price price"
+          "quantity delete";
+        column-gap: 16px;
+
+        .price {
+          text-align: right;
+          grid-area: price;
+          margin-bottom: 8px;
+          font-size: 1.2em;
+          // font-weight: bold;
+        }
+      }
+    }
+  }
+  #order-place-form {
+    .products-form-item {
+      height: calc(100% - 56px - 56px); // - 32px (height) - 24px (margin-bottom)
+    }
+  }
+}
