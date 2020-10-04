@@ -14,13 +14,13 @@ const searchFields = ["id", "name", "address", "phoneNumber", "zipcode"];
 
 function CategoryList() {
   const [shouldShowBranchAddModal, setShouldShowBranchAddModal] = useState(false);
-  const [physicians = [], status, refresh] = useAPI("/api/v1/categories");
+  const [categories = [], status, refresh] = useAPI("/api/v1/categories");
 
   const showBranchAddModal = () => setShouldShowBranchAddModal(true);
   const closeBranchAddModal = () => setShouldShowBranchAddModal(false);
 
   const [searchText, setSearchText] = useState("");
-  const searched = useMemo(() => listsearch(physicians, searchFields, searchText), [physicians, searchText]);
+  const searched = useMemo(() => listsearch(categories, searchFields, searchText), [categories, searchText]);
 
   return (
     <div className="branches-container">
