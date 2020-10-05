@@ -41,3 +41,7 @@ func (s Service) GetOrder(ctx context.Context, id uint) (*model.Order, error) {
 func (s Service) GetOrders(ctx context.Context) ([]*model.Order, error) {
 	return s.repo.GetOrders(ctx)
 }
+
+func (s *Service) NewOrdersCount(ctx context.Context) ([]*util.CountOnDate, error) {
+	return s.repo.NewOrdersCount(ctx)
+}

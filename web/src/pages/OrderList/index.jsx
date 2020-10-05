@@ -1,4 +1,4 @@
-import { Button, Table } from "antd";
+import { Button, Table, Tag } from "antd";
 import React, { useContext, useMemo, useState } from "react";
 import { ListActions, NSHandler, Search } from "shared/components";
 import { CurrencyContext, LocaleContext } from "shared/contexts";
@@ -9,7 +9,14 @@ import "./styles.scss";
 
 const { Column } = Table;
 
-const searchFields = ["id", "name", "address", "zipcode", "phoneNumber"];
+const statusTagColor = {
+  new: "success",
+  preparation: "processing",
+  ready: "purple",
+  delivered: "default",
+};
+
+const searchFields = ["id", "status", "customer.name"];
 
 const getOrderTotal = (o) => o.products.reduce((acc, { unitPrice, quantity }) => acc + unitPrice * quantity, 0);
 
@@ -62,7 +69,7 @@ function OrderList({ navigate }) {
         {() => (
           <Table className="row-clickable" dataSource={searched} rowKey="id" onRow={onRow}>
             <Column title="ID" dataIndex="id" />
-            <Column title="Status" dataIndex="status" />
+            <Column title="Status" dataIndex="status" render={(s) => <Tag color={statusTagColor[s]}>{s.toUpperCase()}</Tag>} />
             <Column title="Total" dataIndex="total" render={(_, o) => <OrderTotal locale={locale} currency={currency} order={o} />} />
             <Column title="Customer" dataIndex={["customer", "name"]} />
           </Table>

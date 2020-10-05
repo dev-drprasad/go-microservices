@@ -134,6 +134,7 @@ func main() {
 	api.POST("/orders", orderhandler.PlaceOrder)
 	api.GET("/orders/:id", orderhandler.GetOrder)
 	api.GET("/orders", orderhandler.GetOrders)
+	api.GET("/orders/aggregations/new", orderhandler.NewOrdersCount)
 
 	api.POST("/customers", customerhandler.AddCustomer)
 	api.GET("/customers/:id", customerhandler.GetCustomer)

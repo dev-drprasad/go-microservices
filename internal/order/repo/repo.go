@@ -20,6 +20,7 @@ type Repo interface {
 	PlaceOrder(ctx context.Context, branch model.Order) error
 	GetOrder(ctx context.Context, id uint) (*model.Order, error)
 	GetOrders(ctx context.Context) ([]*model.Order, error)
+	NewOrdersCount(ctx context.Context) ([]*util.CountOnDate, error)
 }
 
 type DBRepo struct {
@@ -147,4 +148,41 @@ func (repo DBRepo) GetOrders(ctx context.Context) ([]*model.Order, error) {
 	}
 
 	return orders, nil
+}
+
+func (repo DBRepo) NewOrdersCount(ctx context.Context) ([]*util.CountOnDate, error) {
+
+	// https://stackoverflow.com/a/21008768/6748719
+	stmt := `
+    SELECT DATE(ds.series) as createdAt, COUNT(id)
+    FROM %s
+    RIGHT OUTER JOIN (
+      SELECT
+      GENERATE_SERIES((CURRENT_DATE - INTERVAL '14 days'), CURRENT_DATE, '1 day')
+      AS series
+    ) AS ds 
+    ON DATE(createdAt) = ds.series
+    GROUP BY DATE(ds.series)
+    ORDER BY createdAt
+  `
+	stmt = fmt.Sprintf(stmt, ordersTableName)
+
+	rows, err := repo.db.Query(ctx, stmt)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to execute the query")
+	}
+
+	counts := []*util.CountOnDate{}
+	for rows.Next() {
+		var c util.CountOnDate
+		if err = rows.Scan(&c.Date, &c.Count); err != nil {
+			break
+		}
+		counts = append(counts, &c)
+	}
+	if err != nil {
+		return counts, errors.Wrap(err, "Failed to scan rows")
+	}
+
+	return counts, nil
 }

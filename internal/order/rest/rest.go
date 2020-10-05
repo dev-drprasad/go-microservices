@@ -82,3 +82,12 @@ func (h *OrderHandler) GetOrders(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, orders)
 }
+
+func (h *OrderHandler) NewOrdersCount(c echo.Context) error {
+	counts, err := h.service.NewOrdersCount(util.NewContextWithLogger(c))
+	if err != nil {
+		c.Logger().Errorf("Failed to get new orders count : %v", err)
+		return c.JSON(http.StatusInternalServerError, util.NewAPIError(http.StatusText(http.StatusInternalServerError)))
+	}
+	return c.JSON(http.StatusOK, counts)
+}
