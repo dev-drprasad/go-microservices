@@ -1,5 +1,3 @@
-# Ctrl+C Ctrl+V from https://github.com/ARKKYN/nginx-brotli-docker/blob/master/nginx.conf
-
 # auto detects a good number of processes to run
 worker_processes auto;
 

@@ -1,3 +1,8 @@
+
+-- create database ustapi;
+-- CREATE USER user WITH PASSWORD 'password';
+-- GRANT ALL PRIVILEGES ON DATABASE ustapi TO ustapi;
+
 CREATE DOMAIN uint AS int CHECK(VALUE >= 0);
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
